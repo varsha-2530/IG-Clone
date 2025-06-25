@@ -80,6 +80,54 @@ router.put("/Unlike",requireLogin,(req, res)=>{
     )     
 });
 
+router.put('/comment', requireLogin, (req, res)=>{
+    const postcomment ={
+        text: req.body.text,
+        postedBy : req.user._id
+    }
+    Post.findByIdAndUpdate(req.body.postId,{
+        $push:{comment: postcomment}
+    },{
+        new:true
+    })
+    .then(()=>{
+       res.status(200).json({msg:"Comment Successfully"});
+    })
+});
+
+router.put('/deletecomment', requireLogin, (req, res)=>{
+    const postcomment ={
+        text: req.body.text,
+        postedBy : req.user._id
+    }
+    Post.findByIdAndUpdate(req.body.postId,{
+        $pull:{comment: postcomment}
+    },{
+        new:true
+    })
+    .then(()=>{
+       res.status(200).json({msg:"Comment delete Successfully"});
+    })
+});
+
+
+router.delete("/deletepost/:postId", requireLogin, (req, res)=>{
+     Post.findOne({_id : req.params.postId})
+        .then((post)=>{
+            console.log(post);
+           
+            if(post.postedBy._id.toString() === req.user._id.toString()){
+                post.deleteOne()
+                   .then(()=>{
+                      return res.status(200).json({post})
+                   })
+            }
+        });
+});
+
+
+
+
 
 
 
