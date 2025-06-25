@@ -33,7 +33,53 @@ router.get('/allPost', requireLogin,(req, res)=>{
 
             res.status(200).json({posts})
         })
-})
+});
+
+
+router.get('/mypost',requireLogin, (req, res) => {
+   Post.find({ postedBy: req.user._id })
+       .then(data => {
+          //console.log(data);
+           res.json({ posts: data }); 
+       })
+      
+});
+
+
+router.put("/like",requireLogin,(req, res)=>{
+   const {postId} = req.body
+     Post.findByIdAndUpdate(postId,{
+        $push :{likes: req.user._id}
+     },{
+        new:true,
+     }
+    
+    )
+    .then((data)=>{
+        // console.log(data);
+        res.json({data})
+    })
+    .catch(err=>console.log(err)
+    )     
+});
+
+router.put("/Unlike",requireLogin,(req, res)=>{
+   const {postId} = req.body
+     Post.findByIdAndUpdate(postId,{
+        $pull :{likes: req.user._id}
+     },{
+        new:true,
+     }
+    
+    )
+    .then((data)=>{
+        // console.log(data);
+        res.json({data})
+    })
+    .catch(err=>console.log(err)
+    )     
+});
+
 
 
 
